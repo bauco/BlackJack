@@ -1,0 +1,50 @@
+<div *ngIf="!gameStarted">
+    <form>
+        <mat-form-field class="fridge-form-field">
+          <mat-label>player Name</mat-label>
+          <input matInput type="text" [formControl]="playerName" (keydown.enter)="addPlayer(playerName.value)" >
+          <button *ngIf="playerName" matSuffix mat-icon-button aria-label="Clear" (click)="playerName.setValue('')">
+            <mat-icon aria-hidden="false" aria-label="player Name" fontIcon="close"></mat-icon>
+          </button>
+          <mat-error *ngIf="playerName.hasError('max')">
+            Maximun 4 Players
+          </mat-error>
+          <mat-error *ngIf="playerName.hasError('min') && playerName.hasError('empty')">
+            Player Name <strong>required</strong>
+          </mat-error>
+        </mat-form-field>
+        <button mat-button type="submit" disabled="{{playerName.hasError('min') || playerName.hasError('max')}}" (click)="startGame()">Start</button>
+    </form>
+    <ul>
+      <li *ngFor="let player of players; let i=index">
+        {{player.name}}
+        <mat-icon aria-hidden="false" aria-label="player Name" fontIcon="close" (click)="removePlayer(i)" ></mat-icon>
+      </li>
+    </ul>
+  </div>
+
+
+  <div *ngIf="gameStarted && !gameEnded">
+    <div class="delarWrapper">
+      <app-dealr class="delar" [hand]="delar.hand" [ngClass]="{'active-player': currentPlayerIndex === players.length}"  ></app-dealr>
+    </div>
+    <app-deck class="deck" [cards]="deck" (hitPlayer)="hitPlayer()" (playerStand)="stand()"></app-deck>
+    <div class="players">
+      <app-player class="player" *ngFor="let player of players; let i=index" [hand]="players[i].hand" [name]="players[i].name" [score]="players[i].score" [ngClass]="{ 'active-player': currentPlayerIndex === i }"></app-player>
+    </div>
+  </div>
+
+  <div *ngIf="gameEnded">
+    <span>Winner Name: {{winner.name}}</span>
+    <div class="cards">
+        <img class="card" *ngFor="let card of winner.hand;" src="{{card.image}}">
+    </div>
+    <span>Winner Score: {{winner.score}}</span>
+    <button matSuffix mat-button aria-label="play again" (click)="resetGame(false)">
+      Next Round
+      <mat-icon aria-hidden="false" aria-label="player Name" fontIcon="refresh"></mat-icon>
+    </button>
+    <button matSuffix mat-button aria-label="reset" (click)="resetGame()">
+      New Game
+    </button>
+  </div>

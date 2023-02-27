@@ -1,0 +1,5 @@
+<span>Delar</span>
+<div class="cards">
+    <img class="card" *ngFor="let card of hand; let i = index" src="{{ (i == 1 )? hand[0].image :  'assets\\cards\\back.jpg'}}">
+</div>
+

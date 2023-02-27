@@ -1,0 +1,5 @@
+<span>Player Name: {{name}}</span>
+<div class="cards">
+    <img class="card" *ngFor="let card of hand; let i = index" src="{{hand[i].image}}">
+</div>
+<span>Player Score: {{score}}</span>

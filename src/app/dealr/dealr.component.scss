@@ -1,0 +1,16 @@
+img{
+    width: 90px;
+}
+
+.cards{
+    display: flex;
+    .card{
+        &:nth-child(n+2) {
+          left: -0.5rem;
+        }
+        &:nth-child(n+3) {
+          top: -1rem;
+          left: -1rem;
+        }
+    }
+}
