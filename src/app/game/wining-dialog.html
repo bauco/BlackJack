@@ -1,0 +1,8 @@
+<h1 mat-dialog-title>Winner: {{data.name}}</h1>
+<div mat-dialog-content>
+    Score {{data.score}}
+</div>
+<div mat-dialog-actions>
+  <button mat-button mat-dialog-close (click)="nextRound(true)">Next Round</button>
+  <button mat-button mat-dialog-close cdkFocusInitial (click)="nextRound(false)">New Game</button>
+</div>

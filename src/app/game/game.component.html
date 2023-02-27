@@ -24,27 +24,13 @@
   </div>
 
 
-  <div *ngIf="gameStarted && !gameEnded" class="board">
+  <div *ngIf="gameStarted" class="board">
     <div class="delarWrapper">
-      <app-dealr class="delar" [hand]="delar.hand" [ngClass]="{'active-player': currentPlayerIndex === players.length}"  ></app-dealr>
+      <app-dealr *ngIf=" currentPlayerIndex !== players.length" class="delar" [hand]="delar.hand" [ngClass]="{'active-player': currentPlayerIndex === players.length}"  ></app-dealr>
+      <app-player *ngIf=" currentPlayerIndex === players.length" class="delar active-player" [hand]="delar.hand" [name]="delar.name" [score]="delar.score" ></app-player>
     </div>
     <app-deck class="deck" [cards]="deck" (hitPlayer)="hitPlayer()" (playerStand)="stand()"></app-deck>
     <div class="players">
       <app-player class="player" *ngFor="let player of players; let i=index" [hand]="players[i].hand" [name]="players[i].name" [score]="players[i].score" [ngClass]="{ 'active-player': currentPlayerIndex === i }"></app-player>
     </div>
-  </div>
-
-  <div *ngIf="gameEnded">
-    <span>Winner Name: {{winner.name}}</span>
-    <div class="cards">
-        <img class="card" *ngFor="let card of winner.hand;" src="{{card.image}}">
-    </div>
-    <span>Winner Score: {{winner.score}}</span>
-    <button matSuffix mat-button aria-label="play again" (click)="resetGame(false)">
-      Next Round
-      <mat-icon aria-hidden="false" aria-label="player Name" fontIcon="refresh"></mat-icon>
-    </button>
-    <button matSuffix mat-button aria-label="reset" (click)="resetGame()">
-      New Game
-    </button>
   </div>

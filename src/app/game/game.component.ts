@@ -1,7 +1,6 @@
-import { Component, OnInit } from '@angular/core';
-import { AbstractControl, FormControl, FormGroupDirective, NgForm, ValidatorFn, Validators } from '@angular/forms';
-import { ErrorStateMatcher } from '@angular/material/core';
-import { DeckComponent } from '../deck/deck.component';
+import { Component, Inject, OnInit } from '@angular/core';
+import { AbstractControl, FormControl, ValidatorFn } from '@angular/forms';
+import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
 import { Card } from '../interface/card';
 import { Player } from '../interface/player';
 import { DeckService } from '../services/deck.service';
@@ -47,7 +46,7 @@ export class GameComponent  implements OnInit {
 
 
 
-  constructor(deckService : DeckService){
+  constructor(deckService : DeckService, public dialog: MatDialog){
     this.deckService = deckService;
   }
 
@@ -86,14 +85,12 @@ export class GameComponent  implements OnInit {
       }
       let card = this.deckService.hit();
       if(card !== undefined){
-        this.delar.hand.push(card);
-        this.delar.score += card.value;
+        this.delar =  this.updateScore(card,this.delar);
       }
       for(let i = 0; i< this.players.length ; ++i){
         let card = this.deckService.hit();
         if(card !== undefined){
-          this.players[i].hand.push(card);
-          this.players[i].score +=card.value
+          this.players[i] = this.updateScore(card,this.players[i]);
         }
       }        
     }
@@ -106,7 +103,7 @@ export class GameComponent  implements OnInit {
       if(card === undefined){
   
       } else{
-        this.updateScore(card)
+        this.players[this.currentPlayerIndex] = this.updateScore(card, this.players[this.currentPlayerIndex])
         if(this.players[this.currentPlayerIndex].score >= 21){
           this.stand()
         }
@@ -116,51 +113,48 @@ export class GameComponent  implements OnInit {
     }
   }
 
-  updateScore(card : Card){
-    this.players[this.currentPlayerIndex].hand.push(card);
-
-    if(this.players[this.currentPlayerIndex].score + card.value > 21){
+  updateScore(card : Card, player : Player){
+    if(player.score + card.value > 21){
       if(card.isAce()){
         card.value = 1
       }else{
         let flag = false
-        this.players[this.currentPlayerIndex].hand.forEach(card => {     
+        player.hand.forEach(card => {     
           if (!flag && card.isAce() && card.value !== 1){
             card.value = 1;
-            this.players[this.currentPlayerIndex].score -=10;
+            player.score -=10;
             flag = true
           }
         })
       }
     }
-    this.players[this.currentPlayerIndex].score += card.value
+    player.hand.push(card);
+    player.score += card.value
+    return player;
   }
 
   stand(){
     this.currentPlayerIndex +=1;
     if(this.currentPlayerIndex % this.players.length == 0){
-      setTimeout(() => {
         this.hitDelar();
-      }, 3000)
     }
   }
 
   hitDelar(){
     while(this.delar.score < 17){
-      let card = this.deckService.hit();
-      if(card === undefined){
-
-      } else{
-          this.delar.hand.push(card)
-          this.delar.score += card.value  
-      }
+        let card = this.deckService.hit();
+        if(card === undefined){
+        } else{
+          this.delar =  this.updateScore(card,this.delar);  
+        }
     }
+    setTimeout(() => {
+    }, 1000)
     this.calculateWinner()
   }
 
   calculateWinner(): void {
     let highestScore = 0;
-
     for (let i = 0; i <  this.players.length; i++) {
       if (this.players[i].score <= 21 && this.players[i].score > highestScore) {
         highestScore = this.players[i].score;
@@ -172,16 +166,27 @@ export class GameComponent  implements OnInit {
     if ( this.delar.score <= 21 &&  this.delar.score > highestScore) {
       this.winner.name = 'dealer';
       this.winner.hand = this.delar.hand;
-      this.winner.score =  this.delar.score;
+      this.winner.score = this.delar.score;
     }
-
+    this.openDialog();
     this.gameEnded = true;
   }
 
-  resetGame(newPlayers = true) {
+  openDialog(): void {
+    const dialogRef = this.dialog.open(WinningDialog, {
+      data: this.winner,
+    });
+
+    dialogRef.afterClosed().subscribe(playAgain => {
+      this.resetGame(playAgain);
+    });
+  }
+
+  resetGame(playAgain = false) {
     this.delar.hand=[]
+    this.delar.score = 0;
     this.deckService.reset()
-    if(newPlayers){
+    if(!playAgain){
       while(this.players.length > 0){
         this.players.pop()
       }
@@ -194,5 +199,20 @@ export class GameComponent  implements OnInit {
       this.startGame();
     }
     this.gameEnded = false;
+  }
+}
+
+@Component({
+  selector: 'wining-dialog',
+  templateUrl: 'wining-dialog.html',
+})
+export class WinningDialog {
+  constructor(
+    public dialogRef: MatDialogRef<WinningDialog>,
+    @Inject(MAT_DIALOG_DATA) public data: Player,
+  ) {}
+
+  nextRound(playAgain = false): void {
+    this.dialogRef.close(playAgain);
   }
 }
