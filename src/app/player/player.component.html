@@ -3,3 +3,6 @@
     <img class="card" *ngFor="let card of hand; let i = index" src="{{hand[i].image}}">
 </div>
 <span>Player Score: {{score}}</span>
+<div *ngIf="hand.length == 2 && score == 21">
+    <h2>Blackjack!</h2>
+</div>

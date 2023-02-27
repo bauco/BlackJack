@@ -1,11 +1,9 @@
 
 <div (click)="hit()" class="deck">
-    <span>
-        pack
-    </span>
     <div class="cards">
         <img class="card" *ngFor="let card of cards; let i = index" src="{{'assets\\cards\\back.jpg'}}">
     </div>
+    <button matSuffix mat-button aria-label="Draw" >Hit</button>
 </div>
 <br>
 <button matSuffix mat-button aria-label="Stand" (click)="stand()">stand</button>

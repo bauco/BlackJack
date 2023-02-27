@@ -166,16 +166,13 @@ export class GameComponent  implements OnInit {
         highestScore = this.players[i].score;
         this.winner.name = this.players[i].name;
         this.winner.hand = this.players[i].hand;
-        this.winner.score = this.players[i].score
+        this.winner.score = this.players[i].score;
       }
     }
-    let score = 0;
-    this.delar.hand.forEach(card => score += card.value);
-
-    if (score <= 21 && score > highestScore) {
+    if ( this.delar.score <= 21 &&  this.delar.score > highestScore) {
       this.winner.name = 'dealer';
       this.winner.hand = this.delar.hand;
-        this.winner.score =  this.delar.score
+      this.winner.score =  this.delar.score;
     }
 
     this.gameEnded = true;
