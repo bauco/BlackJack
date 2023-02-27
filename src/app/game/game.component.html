@@ -24,7 +24,7 @@
   </div>
 
 
-  <div *ngIf="gameStarted && !gameEnded">
+  <div *ngIf="gameStarted && !gameEnded" class="board">
     <div class="delarWrapper">
       <app-dealr class="delar" [hand]="delar.hand" [ngClass]="{'active-player': currentPlayerIndex === players.length}"  ></app-dealr>
     </div>

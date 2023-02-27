@@ -1,3 +1,6 @@
+.board{
+    background: linear-gradient(to bottom, #00cc66, #006633);;
+}
 .delar{
     display: flex;
     justify-content: center;
@@ -26,7 +29,8 @@
     flex-direction: column;
 }
 .active-player{
-    background-color: green;
+    border: 3px solid yellow;
+    box-shadow: 0 0 10px yellow;
 }
 img{
     width: 90px;
